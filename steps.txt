@@ -1,0 +1,69 @@
+Phase 1 — Project foundation
+Development environment setup
+Spring Boot backend create කිරීම
+MySQL database setup
+Backend ↔ MySQL connection
+Basic REST API test
+
+Phase 2 — User system
+User entity
+Registration
+Login
+JWT authentication
+Admin / Pharmacist / Customer roles
+Protected APIs
+
+Phase 3 — Medicine system
+Medicine entity
+Category
+Supplier
+Medicine CRUD
+Medicine image upload
+Search / filter / pagination
+
+Phase 4 — Inventory
+Stock IN
+Stock OUT
+Low-stock detection
+Expiry detection
+Stock history
+
+Phase 5 — Sales
+Shopping cart
+Sales/order system
+Payment
+Invoice
+Sales history
+
+Phase 6 — Prescription
+Prescription upload
+Pharmacist approval
+Prescription-based orders
+
+Phase 7 — Dashboard
+Admin dashboard
+Sales charts
+Stock statistics
+Expiry/low-stock alerts
+
+Phase 8 — Reports
+PDF invoice
+Sales report
+Inventory report
+Excel export
+
+Phase 9 — Frontend
+React setup
+Login/Register UI
+Admin UI
+Pharmacist UI
+Customer UI
+Responsive design
+
+Phase 10 — Finalization
+Validation
+Error handling
+Security improvements
+Testing
+Docker
+Deployment
