@@ -4,12 +4,16 @@ import com.pharmacy.dto.MedicineRequest;
 import com.pharmacy.dto.MedicineResponse;
 import com.pharmacy.service.MedicineService;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/medicines")
@@ -80,6 +84,21 @@ public class MedicineController {
         return ResponseEntity.ok(medicines);
     }
 
+    @GetMapping("/expired")
+    public ResponseEntity<List<MedicineResponse>> getExpiredMedicines() {
+
+        return ResponseEntity.ok(
+                medicineService.getExpiredMedicines()
+        );
+    }
+
+    @GetMapping("/near-expiry")
+    public ResponseEntity<List<MedicineResponse>> getNearExpiryMedicines() {
+
+        return ResponseEntity.ok(
+                medicineService.getNearExpiryMedicines()
+        );
+    }
     // =========================================================
     // GET MEDICINE BY ID
     // GET /api/medicines/{id}
@@ -132,6 +151,59 @@ public class MedicineController {
 
         return ResponseEntity.ok(
                 "Medicine deleted successfully"
+        );
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<Map<String, Long>> getDashboardSummary() {
+
+        return ResponseEntity.ok(
+                medicineService.getDashboardSummary()
+        );
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<MedicineResponse>> searchMedicines(
+            @RequestParam String keyword
+    ) {
+
+        return ResponseEntity.ok(
+                medicineService.searchMedicines(keyword)
+        );
+    }
+
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<MedicineResponse>> getMedicinesByCategory(
+            @PathVariable String category
+    ) {
+
+        return ResponseEntity.ok(
+                medicineService.getMedicinesByCategory(category)
+        );
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<MedicineResponse>> getMedicinesPaginated(
+
+            @RequestParam(defaultValue = "0") int page,
+
+            @RequestParam(defaultValue = "10") int size,
+
+            @RequestParam(defaultValue = "id") String sortBy,
+
+            @RequestParam(defaultValue = "asc") String direction
+
+    ) {
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        PageRequest pageable =
+                PageRequest.of(page, size, sort);
+
+        return ResponseEntity.ok(
+                medicineService.getMedicinesPaginated(pageable)
         );
     }
 

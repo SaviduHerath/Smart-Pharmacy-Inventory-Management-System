@@ -1,5 +1,6 @@
 package com.pharmacy.entity;
 
+import com.pharmacy.entity.User;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -37,6 +38,10 @@ public class StockTransaction {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     // Empty constructor required by JPA
     public StockTransaction() {
     }
@@ -52,7 +57,6 @@ public class StockTransaction {
         this.transactionType = transactionType;
         this.quantity = quantity;
         this.reason = reason;
-        this.createdAt = LocalDateTime.now();
     }
 
     // Automatically set creation time before saving
@@ -109,5 +113,13 @@ public class StockTransaction {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

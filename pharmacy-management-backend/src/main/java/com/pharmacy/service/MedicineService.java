@@ -4,18 +4,30 @@ import com.pharmacy.dto.MedicineRequest;
 import com.pharmacy.dto.MedicineResponse;
 import com.pharmacy.entity.Medicine;
 import com.pharmacy.repository.MedicineRepository;
+import com.pharmacy.repository.SupplierRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import java.time.LocalDate;
 
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MedicineService {
 
     private final MedicineRepository medicineRepository;
 
+    private final SupplierRepository supplierRepository;
     // Repository එක Service එකට inject කරනවා
-    public MedicineService(MedicineRepository medicineRepository) {
+    public MedicineService(
+            MedicineRepository medicineRepository,
+            SupplierRepository supplierRepository
+    ) {
         this.medicineRepository = medicineRepository;
+        this.supplierRepository = supplierRepository;
     }
 
 
@@ -28,6 +40,8 @@ public class MedicineService {
         // Request DTO එකෙන් data අරගෙන Entity එකක් හදනවා
         Medicine medicine = new Medicine();
 
+
+
         medicine.setMedicineName(request.getMedicineName());
         medicine.setGenericName(request.getGenericName());
         medicine.setCategory(request.getCategory());
@@ -37,6 +51,19 @@ public class MedicineService {
         medicine.setUnitPrice(request.getUnitPrice());
         medicine.setExpiryDate(request.getExpiryDate());
         medicine.setReorderLevel(request.getReorderLevel());
+
+        // Check whether the selected supplier exists.
+        if (request.getSupplier() != null &&
+                !request.getSupplier().isBlank()) {
+
+            supplierRepository.findByName(request.getSupplier())
+                    .orElseThrow(() ->
+                            new RuntimeException(
+                                    "Supplier not found: " + request.getSupplier()
+                            )
+                    );
+        }
+
 
         // Entity එක database එකට save කරනවා
         Medicine savedMedicine = medicineRepository.save(medicine);
@@ -93,6 +120,28 @@ public class MedicineService {
     // GET MEDICINE BY ID
     // =========================================================
 
+    // Get medicines that have already expired.
+    public List<MedicineResponse> getExpiredMedicines() {
+
+        return medicineRepository.findExpiredMedicines()
+                .stream()
+                .map(this::convertToResponse)
+                .toList();
+    }
+
+    // Get medicines that will expire within the next 30 days.
+    public List<MedicineResponse> getNearExpiryMedicines() {
+
+        LocalDate today = LocalDate.now();
+
+        LocalDate nearExpiryDate = today.plusDays(30);
+
+        return medicineRepository
+                .findByExpiryDateBetween(today, nearExpiryDate)
+                .stream()
+                .map(this::convertToResponse)
+                .toList();
+    }
     public MedicineResponse getMedicineById(Long id) {
 
         // ID එකෙන් medicine එක search කරනවා
@@ -117,6 +166,17 @@ public class MedicineService {
                         new RuntimeException("Medicine not found with id: " + id)
                 );
 
+        // Check whether the new supplier exists.
+        if (request.getSupplier() != null &&
+                !request.getSupplier().isBlank()) {
+
+            supplierRepository.findByName(request.getSupplier())
+                    .orElseThrow(() ->
+                            new RuntimeException(
+                                    "Supplier not found: " + request.getSupplier()
+                            )
+                    );
+        }
         // Existing data update කරනවා
         medicine.setMedicineName(request.getMedicineName());
         medicine.setGenericName(request.getGenericName());
@@ -175,6 +235,63 @@ public class MedicineService {
         response.setUpdatedAt(medicine.getUpdatedAt());
 
         return response;
+    }
+
+    public Map<String, Long> getDashboardSummary() {
+
+        long totalMedicines = medicineRepository.count();
+
+        long lowStock = medicineRepository.findLowStockMedicines()
+                .size();
+
+        long outOfStock = medicineRepository.findByQuantity(0)
+                .size();
+
+        long expired = medicineRepository.findExpiredMedicines()
+                .size();
+
+        LocalDate today = LocalDate.now();
+        LocalDate nearExpiryDate = today.plusDays(30);
+
+        long nearExpiry = medicineRepository
+                .findByExpiryDateBetween(today, nearExpiryDate)
+                .size();
+
+        long totalSuppliers = supplierRepository.count();
+
+        Map<String, Long> summary = new HashMap<>();
+
+        summary.put("totalMedicines", totalMedicines);
+        summary.put("lowStock", lowStock);
+        summary.put("outOfStock", outOfStock);
+        summary.put("expired", expired);
+        summary.put("nearExpiry", nearExpiry);
+        summary.put("totalSuppliers", totalSuppliers);
+
+        return summary;
+    }
+
+    public List<MedicineResponse> searchMedicines(String keyword) {
+
+        return medicineRepository.searchMedicines(keyword)
+                .stream()
+                .map(this::convertToResponse)
+                .toList();
+    }
+
+    public List<MedicineResponse> getMedicinesByCategory(String category) {
+
+        return medicineRepository
+                .findByCategoryIgnoreCase(category)
+                .stream()
+                .map(this::convertToResponse)
+                .toList();
+    }
+
+    public Page<MedicineResponse> getMedicinesPaginated(Pageable pageable) {
+
+        return medicineRepository.findAll(pageable)
+                .map(this::convertToResponse);
     }
 
 }

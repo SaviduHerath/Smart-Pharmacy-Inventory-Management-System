@@ -28,6 +28,9 @@ public class StockResponse {
     // Transaction creation date and time
     private LocalDateTime createdAt;
 
+    private Long userId;
+    private String userName;
+
     // Empty constructor
     public StockResponse() {
     }
@@ -50,6 +53,9 @@ public class StockResponse {
         this.reason = transaction.getReason();
 
         this.createdAt = transaction.getCreatedAt();
+
+        this.userId = transaction.getUser().getId();
+        this.userName = transaction.getUser().getFullName();
     }
 
     public Long getId() {
@@ -106,5 +112,21 @@ public class StockResponse {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

@@ -9,8 +9,10 @@ import java.util.Optional;
 public interface SupplierRepository extends JpaRepository<Supplier, Long> {
 
     // Find a supplier by email.
-    // Optional is used because the supplier may not exist.
     Optional<Supplier> findByEmail(String email);
+
+    // Find a supplier by name.
+    Optional<Supplier> findByName(String name);
 
     // Get only active suppliers.
     List<Supplier> findByActiveTrue();

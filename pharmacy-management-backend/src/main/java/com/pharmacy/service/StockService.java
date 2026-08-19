@@ -9,7 +9,11 @@ import com.pharmacy.repository.MedicineRepository;
 import com.pharmacy.repository.StockTransactionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.pharmacy.entity.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -92,15 +96,9 @@ public class StockService {
          */
         medicineRepository.save(medicine);
 
-        /*
-         * Create a stock transaction history record.
-         *
-         * This allows us to know:
-         * - What medicine changed
-         * - IN or OUT
-         * - How many units
-         * - Why it changed
-         */
+
+
+        // Create stock transaction
         StockTransaction transaction = new StockTransaction(
                 medicine,
                 request.getTransactionType(),
@@ -108,11 +106,28 @@ public class StockService {
                 request.getReason()
         );
 
-        // Save transaction history to database.
+// Get currently logged-in user
+        Authentication authentication =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
+
+        User user = null;
+
+        if (authentication != null &&
+                authentication.isAuthenticated() &&
+                authentication.getPrincipal() instanceof User) {
+
+            user = (User) authentication.getPrincipal();
+        }
+
+// Link transaction with logged-in user
+        transaction.setUser(user);
+
+// Save transaction
         StockTransaction savedTransaction =
                 stockTransactionRepository.save(transaction);
 
-        // Convert Entity → Response DTO.
         return new StockResponse(savedTransaction);
     }
 
@@ -143,6 +158,29 @@ public class StockService {
         // Get transactions belonging to this medicine.
         return stockTransactionRepository
                 .findByMedicine(medicine)
+                .stream()
+                .map(StockResponse::new)
+                .toList();
+    }
+
+    public List<StockResponse> getTransactionsByType(
+            TransactionType transactionType
+    ) {
+
+        return stockTransactionRepository
+                .findByTransactionType(transactionType)
+                .stream()
+                .map(StockResponse::new)
+                .toList();
+    }
+
+    public List<StockResponse> getTransactionsByDateRange(
+            LocalDateTime startDate,
+            LocalDateTime endDate
+    ) {
+
+        return stockTransactionRepository
+                .findByCreatedAtBetween(startDate, endDate)
                 .stream()
                 .map(StockResponse::new)
                 .toList();

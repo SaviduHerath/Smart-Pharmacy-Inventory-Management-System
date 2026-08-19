@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.pharmacy.entity.TransactionType;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -93,6 +95,36 @@ public class StockController {
         // 4. Save stock transaction
         return ResponseEntity.ok(
                 stockService.processStock(request)
+        );
+    }
+
+    @GetMapping("/type/{type}")
+    public ResponseEntity<List<StockResponse>> getTransactionsByType(
+            @PathVariable TransactionType type
+    ) {
+
+        return ResponseEntity.ok(
+                stockService.getTransactionsByType(type)
+        );
+    }
+
+    @GetMapping("/date-range")
+    public ResponseEntity<List<StockResponse>> getTransactionsByDateRange(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate
+    ) {
+
+        LocalDateTime startDateTime =
+                startDate.atStartOfDay();
+
+        LocalDateTime endDateTime =
+                endDate.atTime(23, 59, 59);
+
+        return ResponseEntity.ok(
+                stockService.getTransactionsByDateRange(
+                        startDateTime,
+                        endDateTime
+                )
         );
     }
 }
