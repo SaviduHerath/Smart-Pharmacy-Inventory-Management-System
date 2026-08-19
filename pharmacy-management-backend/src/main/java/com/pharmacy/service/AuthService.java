@@ -4,6 +4,8 @@ import com.pharmacy.dto.LoginRequest;
 import com.pharmacy.dto.LoginResponse;
 import com.pharmacy.entity.User;
 import com.pharmacy.repository.UserRepository;
+import com.pharmacy.dto.RegisterRequest;
+import com.pharmacy.dto.UserResponse;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -120,4 +122,38 @@ public class AuthService {
                 user.getRole()
         );
     }
+
+   
+        public UserResponse register(RegisterRequest request) {
+
+        // Email already exists?
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+                throw new RuntimeException("Email already registered");
+        }
+
+        User user = new User();
+
+        user.setFullName(request.getFullName());
+        user.setEmail(request.getEmail());
+
+        // Password hash කරන්න
+        user.setPassword(
+                passwordEncoder.encode(request.getPassword())
+        );
+
+        // IMPORTANT:
+        // Public registration එකෙන් role එක user ට control කරන්න දෙන්නේ නැහැ.
+        user.setRole("CUSTOMER");
+
+        User savedUser = userRepository.save(user);
+
+        return new UserResponse(
+                savedUser.getId(),
+                savedUser.getFullName(),
+                savedUser.getEmail(),
+                savedUser.getRole()
+        );
+        }
+
+
 }
