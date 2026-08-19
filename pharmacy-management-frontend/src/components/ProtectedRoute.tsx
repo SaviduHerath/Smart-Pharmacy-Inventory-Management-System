@@ -1,33 +1,59 @@
-
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 interface ProtectedRouteProps {
-    allowedRoles?: string[];
+    children: React.ReactNode;
+    allowedRoles: string[];
 }
 
-const ProtectedRoute = ({
+export default function ProtectedRoute({
+    children,
     allowedRoles,
-}: ProtectedRouteProps) => {
+}: ProtectedRouteProps) {
 
-    const { isAuthenticated, user } = useAuth();
+    const {
+        token,
+        user,
+        isAuthenticated,
+    } = useAuth();
 
-    // User login වෙලා නැත්නම් Login page එකට යවන්න
-    if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
+
+    // Not logged in
+    if (!isAuthenticated || !token) {
+
+        return (
+            <Navigate
+                to="/login"
+                replace
+            />
+        );
     }
 
-    // Specific roles required නම් check කරන්න
-    if (
-        allowedRoles &&
-        (!user || !allowedRoles.includes(user.role))
-    ) {
-        return <Navigate to="/unauthorized" replace />;
+
+    // User information unavailable
+    if (!user) {
+
+        return (
+            <Navigate
+                to="/login"
+                replace
+            />
+        );
     }
 
-    // Authorized user → requested page
-    return <Outlet />;
-};
 
-export default ProtectedRoute;
+    // Check role
+    if (!allowedRoles.includes(user.role)) {
 
+        return (
+            <Navigate
+                to="/unauthorized"
+                replace
+            />
+        );
+    }
+
+
+    // Authorized
+    return <>{children}</>;
+}

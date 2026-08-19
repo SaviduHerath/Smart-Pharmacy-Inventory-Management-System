@@ -1,8 +1,6 @@
-
 import {
     createContext,
     useContext,
-    useEffect,
     useState,
     type ReactNode,
 } from "react";
@@ -46,17 +44,27 @@ export const AuthProvider = ({
         );
 
     const [user, setUser] =
-        useState<User | null>(
-            () => {
+        useState<User | null>(() => {
 
-                const savedUser =
-                    localStorage.getItem("user");
+            const savedUser =
+                localStorage.getItem("user");
 
-                return savedUser
-                    ? JSON.parse(savedUser)
-                    : null;
+            if (!savedUser) {
+                return null;
             }
-        );
+
+            try {
+                return JSON.parse(savedUser);
+            } catch {
+                localStorage.removeItem("user");
+                return null;
+            }
+        });
+
+
+    // ============================
+    // LOGIN
+    // ============================
 
     const login = (
         newToken: string,
@@ -81,6 +89,11 @@ export const AuthProvider = ({
         }
     };
 
+
+    // ============================
+    // LOGOUT
+    // ============================
+
     const logout = () => {
 
         localStorage.removeItem("token");
@@ -90,37 +103,6 @@ export const AuthProvider = ({
         setUser(null);
     };
 
-    useEffect(() => {
-
-        const savedToken =
-            localStorage.getItem("token");
-
-        const savedUser =
-            localStorage.getItem("user");
-
-        if (savedToken) {
-            setToken(savedToken);
-        }
-
-        if (savedUser) {
-
-            try {
-
-                setUser(
-                    JSON.parse(savedUser)
-                );
-
-            } catch {
-
-                localStorage.removeItem(
-                    "user"
-                );
-
-                setUser(null);
-            }
-        }
-
-    }, []);
 
     return (
         <AuthContext.Provider
@@ -137,6 +119,7 @@ export const AuthProvider = ({
     );
 };
 
+
 export const useAuth = () => {
 
     const context =
@@ -151,4 +134,3 @@ export const useAuth = () => {
 
     return context;
 };
-

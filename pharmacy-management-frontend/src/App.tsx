@@ -4,16 +4,14 @@ import {
     Navigate,
 } from "react-router-dom";
 
+import UserManagement from "./pages/admin/UserManagement";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
-const AdminDashboard = () => (
-    <div className="p-8 text-2xl font-bold">
-        Admin Dashboard
-    </div>
-);
+
+
 
 const PharmacistDashboard = () => (
     <div className="p-8 text-2xl font-bold">
@@ -21,15 +19,18 @@ const PharmacistDashboard = () => (
     </div>
 );
 
+
 const CustomerDashboard = () => (
     <div className="p-8 text-2xl font-bold">
         Customer Dashboard
     </div>
 );
 
+
 const Unauthorized = () => (
     <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
+
             <h1 className="text-4xl font-bold">
                 403
             </h1>
@@ -37,16 +38,19 @@ const Unauthorized = () => (
             <p className="text-gray-600 mt-2">
                 You are not authorized to access this page.
             </p>
+
         </div>
     </div>
 );
+
 
 function App() {
 
     return (
         <Routes>
 
-            {/* Public */}
+            {/* ================= PUBLIC ================= */}
+
             <Route
                 path="/login"
                 element={<Login />}
@@ -57,53 +61,70 @@ function App() {
                 element={<Register />}
             />
 
-            {/* Admin */}
-            <Route element={
-                <ProtectedRoute
-                    allowedRoles={["ADMIN"]}
-                />
-            }>
-                <Route
-                    path="/admin"
-                    element={<AdminDashboard />}
-                />
-            </Route>
+
+            {/* ================= ADMIN ================= */}
+
+            <Route
+                path="/admin"
+                element={
+                    <ProtectedRoute
+                        allowedRoles={["ADMIN"]}
+                    >
+                        <AdminDashboard />
+                    </ProtectedRoute>
+                }
+            />
+
+            <Route
+                path="/admin/users"
+                element={
+                    <ProtectedRoute
+                        allowedRoles={["ADMIN"]}
+                    >
+                        <UserManagement />
+                    </ProtectedRoute>
+                }
+            />
 
 
-            {/* Pharmacist */}
-            <Route element={
-                <ProtectedRoute
-                    allowedRoles={["PHARMACIST"]}
-                />
-            }>
-                <Route
-                    path="/pharmacist"
-                    element={<PharmacistDashboard />}
-                />
-            </Route>
+            {/* ================= PHARMACIST ================= */}
+
+            <Route
+                path="/pharmacist"
+                element={
+                    <ProtectedRoute
+                        allowedRoles={["PHARMACIST"]}
+                    >
+                        <PharmacistDashboard />
+                    </ProtectedRoute>
+                }
+            />
 
 
-            {/* Customer */}
-            <Route element={
-                <ProtectedRoute
-                    allowedRoles={["CUSTOMER"]}
-                />
-            }>
-                <Route
-                    path="/customer"
-                    element={<CustomerDashboard />}
-                />
-            </Route>
+            {/* ================= CUSTOMER ================= */}
+
+            <Route
+                path="/customer"
+                element={
+                    <ProtectedRoute
+                        allowedRoles={["CUSTOMER"]}
+                    >
+                        <CustomerDashboard />
+                    </ProtectedRoute>
+                }
+            />
 
 
-            {/* Unauthorized */}
+            {/* ================= UNAUTHORIZED ================= */}
+
             <Route
                 path="/unauthorized"
                 element={<Unauthorized />}
             />
 
 
-            {/* Default */}
+            {/* ================= DEFAULT ================= */}
+
             <Route
                 path="*"
                 element={
@@ -119,4 +140,3 @@ function App() {
 }
 
 export default App;
-

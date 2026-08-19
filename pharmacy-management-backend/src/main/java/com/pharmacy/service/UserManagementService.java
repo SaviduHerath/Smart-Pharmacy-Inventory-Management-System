@@ -6,6 +6,8 @@ import com.pharmacy.entity.User;
 import com.pharmacy.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 
@@ -97,4 +99,93 @@ public class UserManagementService {
                 user.getRole()
         );
     }
+
+  
+    // =========================================================
+    // UPDATE USER ROLE
+    // =========================================================
+
+    public AdminUserResponse updateUserRole(
+        Long id,
+        String role
+) {
+
+    Authentication authentication =
+            SecurityContextHolder
+                    .getContext()
+                    .getAuthentication();
+
+    User loggedInUser =
+            (User) authentication.getPrincipal();
+
+    // Adminට තමන්ගේ role එක change කරන්න බැහැ
+    if (loggedInUser.getId().equals(id)) {
+
+        throw new RuntimeException(
+                "You cannot change your own role"
+        );
+    }
+
+    User user = userRepository.findById(id)
+            .orElseThrow(() ->
+                    new RuntimeException(
+                            "User not found with id: " + id
+                    )
+            );
+
+    role = role.toUpperCase();
+
+    if (!role.equals("ADMIN") &&
+            !role.equals("PHARMACIST") &&
+            !role.equals("CUSTOMER")) {
+
+        throw new RuntimeException(
+                "Invalid role"
+        );
+    }
+
+    user.setRole(role);
+
+    User updatedUser =
+            userRepository.save(user);
+
+    return new AdminUserResponse(
+            updatedUser.getId(),
+            updatedUser.getFullName(),
+            updatedUser.getEmail(),
+            updatedUser.getRole()
+    );
+}
+
+    // =========================================================
+    // DELETE USER
+    // =========================================================
+
+   public void deleteUser(Long id) {
+
+    Authentication authentication =
+            SecurityContextHolder
+                    .getContext()
+                    .getAuthentication();
+
+    User loggedInUser =
+            (User) authentication.getPrincipal();
+
+    // Adminට තමන්ව delete කරන්න බැහැ
+    if (loggedInUser.getId().equals(id)) {
+
+        throw new RuntimeException(
+                "You cannot delete your own account"
+        );
+    }
+
+    User user = userRepository.findById(id)
+            .orElseThrow(() ->
+                    new RuntimeException(
+                            "User not found with id: " + id
+                    )
+            );
+
+    userRepository.delete(user);
+}
 }

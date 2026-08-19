@@ -55,4 +55,41 @@ public class UserManagementController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
+
+        // =========================================================
+        // UPDATE USER ROLE
+        // ADMIN ONLY
+        // =========================================================
+
+        @PutMapping("/{id}/role")
+        @PreAuthorize("hasRole('ADMIN')")
+        public ResponseEntity<AdminUserResponse> updateUserRole(
+                @PathVariable Long id,
+                @RequestParam String role
+        ) {
+
+            AdminUserResponse response =
+                    userManagementService.updateUserRole(id, role);
+
+            return ResponseEntity.ok(response);
+        }
+
+
+        // =========================================================
+        // DELETE USER
+        // ADMIN ONLY
+        // =========================================================
+
+        @DeleteMapping("/{id}")
+        @PreAuthorize("hasRole('ADMIN')")
+        public ResponseEntity<Void> deleteUser(
+                @PathVariable Long id
+        ) {
+
+            userManagementService.deleteUser(id);
+
+            return ResponseEntity.noContent().build();
+        }
+
+
 }

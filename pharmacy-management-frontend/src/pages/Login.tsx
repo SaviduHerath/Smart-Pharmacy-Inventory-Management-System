@@ -4,18 +4,26 @@ import { loginUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 
+interface JwtPayload {
+    sub?: string;
+    email?: string;
+    role?: string;
+    exp?: number;
+}
+
 export default function Login() {
+
     const [showPassword, setShowPassword] = useState(false);
 
-    const navigate= useNavigate();
+    const navigate = useNavigate();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+
     const { login } = useAuth();
-
-   
-
 
 
     const handleLogin = async (
@@ -35,52 +43,50 @@ export default function Login() {
 
             setLoading(true);
 
-             interface JwtPayload {
-                    sub?: string;
-                    email?: string;
-                    role?: string;
-                    exp?: number;
-                }
+            // Backend login API
+            const response = await loginUser({
+                email,
+                password,
+            });
 
+            // Decode JWT
+            const decoded = jwtDecode<JwtPayload>(
+                response.token
+            );
 
-            
-                const response = await loginUser({
-                    email,
-                    password,
-                });
-
-                const decoded = jwtDecode<JwtPayload>(
-                    response.token
-                );
-
-                const user = {
-                    email: decoded.email || email,
-                    role: decoded.role || "CUSTOMER",
+            // User information
+            const user = {
+                    id: response.id,
+                    fullName: response.fullName,
+                    email: response.email,
+                    role: response.role,
                 };
 
-                login(
-                    response.token,
-                    user
-                );
+            // Save authentication state
+            login(
+                response.token,
+                user
+            );
 
-                // Role අනුව redirect
-                switch (user.role) {
 
-                    case "ADMIN":
-                        navigate("/admin");
-                        break;
+            // Role-based redirect
+            switch (user.role) {
 
-                    case "PHARMACIST":
-                        navigate("/pharmacist");
-                        break;
+                case "ADMIN":
+                    navigate("/admin");
+                    break;
 
-                    case "CUSTOMER":
-                        navigate("/customer");
-                        break;
+                case "PHARMACIST":
+                    navigate("/pharmacist");
+                    break;
 
-                    default:
-                        navigate("/");
-                }
+                case "CUSTOMER":
+                    navigate("/customer");
+                    break;
+
+                default:
+                    setError("Invalid user role.");
+            }
 
         } catch (error: any) {
 
@@ -104,7 +110,6 @@ export default function Login() {
             setLoading(false);
         }
     };
-
 
 
     return (
