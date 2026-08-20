@@ -154,6 +154,10 @@ public class SecurityConfig {
                                 "/api/pharmacist/**"
                         ).hasRole("PHARMACIST")
 
+                        .requestMatchers(
+                                "/api/medicines/**"
+                        ).hasRole("PHARMACIST")
+
 
                         /*
                          * ---------------------------------

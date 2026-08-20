@@ -9,15 +9,17 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import PharmacistDashboard
+    from "./pages/pharmacist/PharmacistDashboard";
 
 
+import Inventory from "./pages/pharmacist/Inventory";
+
+import Prescriptions from "./pages/pharmacist/Prescriptions";
+import MedicineManagement
+    from "./pages/pharmacist/MedicineManagement";
 
 
-const PharmacistDashboard = () => (
-    <div className="p-8 text-2xl font-bold">
-        Pharmacist Dashboard
-    </div>
-);
 
 
 const CustomerDashboard = () => (
@@ -99,6 +101,47 @@ function App() {
                     </ProtectedRoute>
                 }
             />
+            <Route
+                    path="/pharmacist"
+                    element={
+                        <ProtectedRoute allowedRoles={["PHARMACIST"]}>
+                            <PharmacistDashboard />
+                        </ProtectedRoute>
+                    }
+                />
+
+                
+
+                <Route
+                    path="/pharmacist/inventory"
+                    element={
+                        <ProtectedRoute allowedRoles={["PHARMACIST"]}>
+                            <Inventory />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/pharmacist/prescriptions"
+                    element={
+                        <ProtectedRoute allowedRoles={["PHARMACIST"]}>
+                            <Prescriptions />
+                        </ProtectedRoute>
+                    }
+                />
+
+                
+                <Route
+                    path="/pharmacist/medicines"
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={["PHARMACIST"]}
+                        >
+                            <MedicineManagement />
+                        </ProtectedRoute>
+                    }
+                />
+
 
 
             {/* ================= CUSTOMER ================= */}
