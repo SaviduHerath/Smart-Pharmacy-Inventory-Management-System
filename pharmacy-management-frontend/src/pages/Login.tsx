@@ -2,14 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
-import { jwtDecode } from "jwt-decode";
-
-interface JwtPayload {
-    sub?: string;
-    email?: string;
-    role?: string;
-    exp?: number;
-}
 
 export default function Login() {
 
@@ -49,14 +41,8 @@ export default function Login() {
                 password,
             });
 
-            // Decode JWT
-            const decoded = jwtDecode<JwtPayload>(
-                response.token
-            );
-
-            // User information
             const user = {
-                    id: response.id,
+                    id: response.userId,
                     fullName: response.fullName,
                     email: response.email,
                     role: response.role,
@@ -92,14 +78,11 @@ export default function Login() {
 
             console.error("Login error:", error);
 
-            if (error.response?.data?.message) {
-
-                setError(
-                    error.response.data.message
-                );
-
+            if (typeof error.response?.data === "string") {
+                setError(error.response.data);
+            } else if (error.response?.data?.message) {
+                setError(error.response.data.message);
             } else {
-
                 setError(
                     "Login failed. Please check your email and password."
                 );

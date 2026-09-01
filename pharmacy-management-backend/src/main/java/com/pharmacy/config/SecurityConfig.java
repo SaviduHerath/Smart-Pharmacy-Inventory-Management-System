@@ -3,6 +3,7 @@ package com.pharmacy.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
@@ -126,6 +127,9 @@ public class SecurityConfig {
                          * ඒ නිසා login සහ register
                          * public.
                          */
+                        .requestMatchers(HttpMethod.OPTIONS, "/**")
+                        .permitAll()
+
                         .requestMatchers(
                                 "/api/auth/**"
                         ).permitAll()
@@ -155,28 +159,47 @@ public class SecurityConfig {
                         ).hasRole("PHARMACIST")
 
                         .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/medicines",
                                 "/api/medicines/**"
-                        ).hasRole("PHARMACIST")
+                        ).hasAnyRole("ADMIN", "PHARMACIST", "CUSTOMER")
 
+                        .requestMatchers(
+                                "/api/medicines",
+                                "/api/medicines/**"
+                        ).hasAnyRole("ADMIN", "PHARMACIST")
 
-                        /*
-                         * ---------------------------------
-                         * CUSTOMER ONLY
-                         * ---------------------------------
-                         */
+                        .requestMatchers("/api/suppliers/**")
+                        .hasAnyRole("ADMIN", "PHARMACIST")
+
+                        .requestMatchers("/api/stock/**")
+                        .hasAnyRole("ADMIN", "PHARMACIST")
+
+                        .requestMatchers("/api/cart/**")
+                        .hasRole("CUSTOMER")
+
+                        .requestMatchers(HttpMethod.POST, "/api/orders")
+                        .hasRole("CUSTOMER")
+
+                        .requestMatchers(HttpMethod.GET, "/api/orders")
+                        .hasAnyRole("ADMIN", "PHARMACIST")
+
+                        .requestMatchers(HttpMethod.GET, "/api/orders/my")
+                        .hasRole("CUSTOMER")
+
+                        .requestMatchers(HttpMethod.PUT, "/api/orders/*/cancel")
+                        .hasRole("CUSTOMER")
+
+                        .requestMatchers(HttpMethod.GET, "/api/orders/*")
+                        .hasAnyRole("ADMIN", "PHARMACIST", "CUSTOMER")
+
+                        .requestMatchers("/api/orders/**")
+                        .hasAnyRole("ADMIN", "PHARMACIST")
+
                         .requestMatchers(
                                 "/api/customer/**"
                         ).hasRole("CUSTOMER")
 
-
-                        /*
-                         * ---------------------------------
-                         * OTHER ENDPOINTS
-                         * ---------------------------------
-                         *
-                         * ඉහත rules වලට match නොවන
-                         * සියලු endpoints වලට login අවශ්‍යයි.
-                         */
                         .anyRequest().authenticated()
                 );
 

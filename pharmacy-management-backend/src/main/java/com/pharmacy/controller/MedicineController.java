@@ -17,7 +17,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/medicines")
-@CrossOrigin(origins = "http://localhost:3000")
 public class MedicineController {
 
     private final MedicineService medicineService;
@@ -182,30 +181,43 @@ public class MedicineController {
         );
     }
 
-    @GetMapping("/page")
-    public ResponseEntity<Page<MedicineResponse>> getMedicinesPaginated(
+   @GetMapping("/page")
+public ResponseEntity<Page<MedicineResponse>> getMedicinesPaginated(
 
-            @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "") String keyword,
 
-            @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "ALL") String filter,
 
-            @RequestParam(defaultValue = "id") String sortBy,
+        @RequestParam(defaultValue = "0") int page,
 
-            @RequestParam(defaultValue = "asc") String direction
+        @RequestParam(defaultValue = "10") int size,
 
-    ) {
+        @RequestParam(defaultValue = "id") String sortBy,
 
-        Sort sort = direction.equalsIgnoreCase("desc")
-                ? Sort.by(sortBy).descending()
-                : Sort.by(sortBy).ascending();
+        @RequestParam(defaultValue = "desc") String direction
 
-        PageRequest pageable =
-                PageRequest.of(page, size, sort);
+) {
 
-        return ResponseEntity.ok(
-                medicineService.getMedicinesPaginated(pageable)
-        );
-    }
+    Sort sort =
+            direction.equalsIgnoreCase("desc")
+                    ? Sort.by(sortBy).descending()
+                    : Sort.by(sortBy).ascending();
 
 
+    PageRequest pageable =
+            PageRequest.of(
+                    page,
+                    size,
+                    sort
+            );
+
+
+    return ResponseEntity.ok(
+            medicineService.getMedicinesWithFilter(
+                    keyword,
+                    filter,
+                    pageable
+            )
+    );
+}
 }

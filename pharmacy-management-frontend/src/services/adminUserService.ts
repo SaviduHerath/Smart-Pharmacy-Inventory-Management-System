@@ -1,6 +1,4 @@
-import axios from "axios";
-
-const API_URL = "http://localhost:8080/api/admin/users";
+import api from "./api";
 
 export interface AdminUser {
     id: number;
@@ -16,81 +14,28 @@ export interface CreateStaffUserRequest {
     role: "ADMIN" | "PHARMACIST";
 }
 
-// Get all users
 export const getAllUsers = async (): Promise<AdminUser[]> => {
-
-    const token = localStorage.getItem("token");
-
-    const response = await axios.get(API_URL, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-
+    const response = await api.get<AdminUser[]>("/admin/users");
     return response.data;
 };
 
-// Create Admin / Pharmacist
 export const createStaffUser = async (
     data: CreateStaffUserRequest
 ): Promise<AdminUser> => {
-
-    const token = localStorage.getItem("token");
-
-    const response = await axios.post(
-        API_URL,
-        data,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-    );
-
+    const response = await api.post<AdminUser>("/admin/users", data);
     return response.data;
 };
 
-
-// Update user role
 export const updateUserRole = async (
     id: number,
     role: "ADMIN" | "PHARMACIST" | "CUSTOMER"
 ): Promise<AdminUser> => {
-
-    const token = localStorage.getItem("token");
-
-    const response = await axios.put(
-        `${API_URL}/${id}/role`,
-        null,
-        {
-            params: {
-                role,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-    );
-
+    const response = await api.put<AdminUser>(`/admin/users/${id}/role`, null, {
+        params: { role },
+    });
     return response.data;
 };
 
-
-// Delete user
-export const deleteUser = async (
-    id: number
-): Promise<void> => {
-
-    const token = localStorage.getItem("token");
-
-    await axios.delete(
-        `${API_URL}/${id}`,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-    );
+export const deleteUser = async (id: number): Promise<void> => {
+    await api.delete(`/admin/users/${id}`);
 };
-
-

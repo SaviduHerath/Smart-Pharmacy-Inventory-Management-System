@@ -131,10 +131,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                      * Spring Security convention එක අනුව
                      * ROLE_ prefix එක use කරනවා.
                      */
+                    String role = user.getRole() == null
+                            ? ""
+                            : user.getRole().trim().toUpperCase();
+
+                    if (role.startsWith("ROLE_")) {
+                        role = role.substring(5);
+                    }
+
                     SimpleGrantedAuthority authority =
-                            new SimpleGrantedAuthority(
-                                    "ROLE_" + user.getRole()
-                            );
+                            new SimpleGrantedAuthority("ROLE_" + role);
 
 
                     /*

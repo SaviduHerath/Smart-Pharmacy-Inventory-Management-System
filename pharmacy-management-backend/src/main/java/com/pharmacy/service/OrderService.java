@@ -163,6 +163,7 @@ public class OrderService {
                             cartItem.getUnitPrice()
                     );
 
+            savedOrder.getItems().add(orderItem);
             orderItemRepository.save(orderItem);
         }
 
@@ -204,15 +205,50 @@ public class OrderService {
     // GET ORDER BY ID
     // =========================================================
 
+    @Transactional(readOnly = true)
     public Order getOrderById(Long orderId) {
 
-        return orderRepository.findById(orderId)
+        Order order = orderRepository.findById(orderId)
                 .orElseThrow(() ->
                         new RuntimeException(
                                 "Order not found with id: "
                                         + orderId
                         )
                 );
+
+        initializeOrder(order);
+        return order;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Order> getAllOrders() {
+
+        List<Order> orders = orderRepository.findAll();
+        orders.forEach(this::initializeOrder);
+        return orders;
+    }
+
+    @Transactional
+    public Order updateOrderStatus(Long orderId, OrderStatus status) {
+
+        Order order = getOrderById(orderId);
+
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            throw new RuntimeException("Cancelled order cannot be updated");
+        }
+
+        if (order.getStatus() == OrderStatus.COMPLETED
+                && status != OrderStatus.COMPLETED) {
+            throw new RuntimeException("Completed order cannot be updated");
+        }
+
+        if (status == OrderStatus.CANCELLED
+                && order.getStatus() != OrderStatus.CANCELLED) {
+            restoreStock(order);
+        }
+
+        order.setStatus(status);
+        return orderRepository.save(order);
     }
 
 
@@ -220,9 +256,12 @@ public class OrderService {
     // GET CURRENT USER ORDERS
     // =========================================================
 
+    @Transactional(readOnly = true)
     public List<Order> getUserOrders(User user) {
 
-        return orderRepository.findByUser(user);
+        List<Order> orders = orderRepository.findByUser(user);
+        orders.forEach(this::initializeOrder);
+        return orders;
     }
 
 
@@ -230,11 +269,14 @@ public class OrderService {
     // GET ORDERS BY STATUS
     // =========================================================
 
+    @Transactional(readOnly = true)
     public List<Order> getOrdersByStatus(
             OrderStatus status
     ) {
 
-        return orderRepository.findByStatus(status);
+        List<Order> orders = orderRepository.findByStatus(status);
+        orders.forEach(this::initializeOrder);
+        return orders;
     }
 
 
@@ -336,6 +378,28 @@ public class OrderService {
 
 
         return orderRepository.save(order);
+    }
+
+    private void restoreStock(Order order) {
+
+        List<OrderItem> orderItems =
+                orderItemRepository.findByOrder(order);
+
+        for (OrderItem orderItem : orderItems) {
+            Medicine medicine = orderItem.getMedicine();
+            medicine.setQuantity(
+                    medicine.getQuantity() + orderItem.getQuantity()
+            );
+            medicineRepository.save(medicine);
+        }
+    }
+
+    private void initializeOrder(Order order) {
+        order.getUser().getFullName();
+        order.getItems().size();
+        for (OrderItem item : order.getItems()) {
+            item.getMedicine().getMedicineName();
+        }
     }
 }
 

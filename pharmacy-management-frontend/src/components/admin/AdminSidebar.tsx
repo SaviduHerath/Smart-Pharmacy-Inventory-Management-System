@@ -11,26 +11,6 @@ const menuItems = [
         path: "/admin/users",
         icon: "👥",
     },
-    {
-        name: "Medicines",
-        path: "/admin/medicines",
-        icon: "💊",
-    },
-    {
-        name: "Inventory",
-        path: "/admin/inventory",
-        icon: "📦",
-    },
-    {
-        name: "Orders",
-        path: "/admin/orders",
-        icon: "🛒",
-    },
-    {
-        name: "Reports",
-        path: "/admin/reports",
-        icon: "📊",
-    },
 ];
 
 export default function AdminSidebar() {
@@ -72,6 +52,7 @@ export default function AdminSidebar() {
                         <NavLink
                             key={item.path}
                             to={item.path}
+                            end={item.path === "/admin"}
                             className={({ isActive }) =>
                                 `flex items-center rounded-xl px-4 py-3 text-sm font-medium transition ${
                                     isActive

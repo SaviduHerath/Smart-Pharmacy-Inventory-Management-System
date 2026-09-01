@@ -294,4 +294,59 @@ public class MedicineService {
                 .map(this::convertToResponse);
     }
 
+    // =========================================================
+// SERVER-SIDE SEARCH + FILTER + PAGINATION
+// =========================================================
+
+public Page<MedicineResponse> getMedicinesWithFilter(
+        String keyword,
+        String filter,
+        Pageable pageable
+) {
+
+    if (keyword == null) {
+        keyword = "";
+    }
+
+    if (filter == null || filter.isBlank()) {
+        filter = "ALL";
+    }
+
+    keyword = keyword.trim();
+
+    filter = filter.toUpperCase();
+
+    // Near expiry = next 30 days
+    LocalDate nearExpiryDate =
+            LocalDate.now().plusDays(30);
+
+
+    // Validate filter
+
+    if (!filter.equals("ALL") &&
+            !filter.equals("LOW_STOCK") &&
+            !filter.equals("OUT_OF_STOCK") &&
+            !filter.equals("NEAR_EXPIRY") &&
+            !filter.equals("EXPIRED")) {
+
+        throw new RuntimeException(
+                "Invalid medicine filter"
+        );
+    }
+
+
+    Page<Medicine> medicines =
+            medicineRepository.findMedicinesWithFilter(
+                    keyword,
+                    filter,
+                    nearExpiryDate,
+                    pageable
+            );
+
+
+    return medicines.map(
+            MedicineResponse::new
+    );
+}
+
 }

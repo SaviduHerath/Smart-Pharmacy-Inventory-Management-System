@@ -114,6 +114,30 @@ public class OrderController {
      *
      * Logged-in customerගේ orders විතරක් ලබාගන්නවා.
      */
+    @GetMapping
+    public ResponseEntity<List<OrderResponse>> getAllOrders() {
+
+        List<OrderResponse> responses =
+                orderService.getAllOrders()
+                        .stream()
+                        .map(OrderResponse::new)
+                        .toList();
+
+        return ResponseEntity.ok(responses);
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<OrderResponse> updateOrderStatus(
+            @PathVariable Long id,
+            @RequestParam OrderStatus status
+    ) {
+
+        Order order =
+                orderService.updateOrderStatus(id, status);
+
+        return ResponseEntity.ok(new OrderResponse(order));
+    }
+
     @GetMapping("/my")
     public ResponseEntity<List<OrderResponse>> getMyOrders() {
 
@@ -145,8 +169,13 @@ public class OrderController {
             @PathVariable Long id
     ) {
 
-        Order order =
-                orderService.getOrderById(id);
+        User user = getCurrentUser();
+        Order order = orderService.getOrderById(id);
+
+        if ("CUSTOMER".equalsIgnoreCase(user.getRole())
+                && !order.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("You cannot view this order");
+        }
 
         return ResponseEntity.ok(
                 new OrderResponse(order)
