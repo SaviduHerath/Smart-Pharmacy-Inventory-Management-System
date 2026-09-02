@@ -133,7 +133,7 @@ export default function Inventory() {
                     <table className="w-full">
                         <thead className="bg-slate-50">
                             <tr>
-                                {["Medicine", "Type", "Qty", "Reason", "User", "Date"].map(
+                                {["Medicine", "Type", "Qty", "Reason", "Pharmacist", "Date"].map(
                                     (heading) => (
                                         <th
                                             key={heading}

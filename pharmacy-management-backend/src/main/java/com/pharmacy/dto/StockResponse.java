@@ -54,8 +54,13 @@ public class StockResponse {
 
         this.createdAt = transaction.getCreatedAt();
 
-        this.userId = transaction.getUser().getId();
-        this.userName = transaction.getUser().getFullName();
+        if (transaction.getUser() != null) {
+            this.userId = transaction.getUser().getId();
+            this.userName = transaction.getUser().getFullName();
+        } else {
+            this.userId = null;
+            this.userName = null;
+        }
     }
 
     public Long getId() {
