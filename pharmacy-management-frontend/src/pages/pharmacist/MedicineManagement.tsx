@@ -147,14 +147,16 @@ export default function MedicineManagement() {
             action={
                 <button
                     onClick={openAdd}
-                    className="rounded-xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-600"
+                    className="flex items-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-slate-900 shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all hover:bg-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] hover:-translate-y-0.5"
                 >
-                    + Add Medicine
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                    Add Medicine
                 </button>
             }
         >
             {error && (
-                <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                <div className="mb-6 flex items-center gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-4 text-sm font-medium text-red-400 backdrop-blur-md">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     {error}
                 </div>
             )}
@@ -181,23 +183,27 @@ export default function MedicineManagement() {
                 }}
             />
 
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-2xl border border-slate-700/50 bg-slate-800/50 shadow-xl shadow-black/10 backdrop-blur-md">
                 {loading ? (
-                    <div className="p-10 text-center text-sm text-slate-500">
-                        Loading medicines...
+                    <div className="flex flex-col items-center justify-center p-20 text-emerald-400">
+                        <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-400 border-t-transparent" />
+                        <p className="mt-4 text-sm font-medium">Loading medicines...</p>
                     </div>
                 ) : medicines.length === 0 ? (
-                    <div className="p-10 text-center text-slate-500">No medicines found.</div>
+                    <div className="p-20 text-center text-slate-400">
+                        <div className="text-4xl mb-3">📦</div>
+                        <p>No medicines found.</p>
+                    </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full">
-                            <thead className="bg-slate-50">
+                            <thead className="bg-slate-900/50">
                                 <tr>
                                     {["Medicine", "Category", "Supplier", "Price", "Stock", "Expiry", "Actions"].map(
                                         (heading) => (
                                             <th
                                                 key={heading}
-                                                className="px-6 py-4 text-left text-xs font-semibold uppercase text-slate-500"
+                                                className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-400"
                                             >
                                                 {heading}
                                             </th>
@@ -205,45 +211,46 @@ export default function MedicineManagement() {
                                     )}
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100">
+                            <tbody className="divide-y divide-slate-700/50">
                                 {medicines.map((medicine) => (
-                                    <tr key={medicine.id} className="hover:bg-slate-50">
+                                    <tr key={medicine.id} className="transition-colors hover:bg-slate-700/30">
                                         <td className="px-6 py-4">
-                                            <p className="font-semibold text-slate-800">
+                                            <p className="font-bold text-slate-200">
                                                 {medicine.medicineName}
                                             </p>
-                                            <p className="text-xs text-slate-400">
+                                            <p className="text-xs text-slate-400 mt-0.5">
                                                 {medicine.genericName}
                                             </p>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-slate-600">
+                                        <td className="px-6 py-4 text-sm font-medium text-slate-300">
                                             {medicine.category}
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-slate-600">
+                                        <td className="px-6 py-4 text-sm text-slate-400">
                                             {medicine.supplier}
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-slate-700">
+                                        <td className="px-6 py-4 font-bold text-slate-200">
                                             Rs. {Number(medicine.unitPrice).toFixed(2)}
                                         </td>
                                         <td className="px-6 py-4">
                                             <span
-                                                className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                                                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${
                                                     medicine.quantity === 0
-                                                        ? "bg-red-100 text-red-700"
+                                                        ? "bg-red-500/10 text-red-400 border border-red-500/20"
                                                         : medicine.quantity <= medicine.reorderLevel
-                                                          ? "bg-amber-100 text-amber-700"
-                                                          : "bg-emerald-100 text-emerald-700"
+                                                          ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                                          : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                                                 }`}
                                             >
+                                                <span className={`h-1.5 w-1.5 rounded-full ${medicine.quantity === 0 ? "bg-red-400" : medicine.quantity <= medicine.reorderLevel ? "bg-amber-400" : "bg-emerald-400"}`}></span>
                                                 {medicine.quantity} units
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-sm">{medicine.expiryDate}</td>
+                                        <td className="px-6 py-4 text-sm text-slate-400">{medicine.expiryDate}</td>
                                         <td className="px-6 py-4">
                                             <div className="flex gap-2">
                                                 <button
                                                     onClick={() => openEdit(medicine)}
-                                                    className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                                                    className="rounded-lg border border-slate-600 bg-slate-900/50 px-3 py-2 text-xs font-medium text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
                                                 >
                                                     Edit
                                                 </button>

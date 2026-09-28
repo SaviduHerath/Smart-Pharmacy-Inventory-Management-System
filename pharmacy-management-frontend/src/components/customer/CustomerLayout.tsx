@@ -36,37 +36,48 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
 
     const linkClass = ({ isActive }: { isActive: boolean }) =>
         `relative pb-1 text-sm font-medium transition-colors duration-300 ${
-            isActive ? "text-[#1C2521]" : "text-[#6B7570] hover:text-[#1C2521]"
-        } after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-[#1F6F54] after:transition-transform after:duration-300 ${
+            isActive ? "text-emerald-400" : "text-slate-400 hover:text-emerald-300"
+        } after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-emerald-400 after:transition-transform after:duration-300 ${
             isActive ? "after:scale-x-100" : "hover:after:scale-x-100"
         }`;
 
     return (
-        <div className="min-h-screen overflow-x-hidden bg-[#FBFAF7]">
+        <div className="min-h-screen overflow-x-hidden text-slate-100 font-sans selection:bg-teal-500/30 flex flex-col relative bg-slate-950">
+            {/* Immersive background image with heavy dark overlay */}
+            <div 
+                className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-40 mix-blend-luminosity" 
+                style={{ backgroundImage: "url('/bg-customer.jpg')" }} 
+            />
+            <div className="fixed inset-0 z-0 bg-slate-950/80 backdrop-blur-[2px]" />
+
+            {/* Decorative blobs */}
+            <div className="absolute top-0 right-0 -mr-40 -mt-40 w-96 h-96 bg-teal-500/10 rounded-full blur-[100px] pointer-events-none z-0" />
+            <div className="absolute top-1/2 left-0 -ml-40 -mt-40 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none z-0" />
+
             <header
                 className={`sticky top-0 z-40 border-b transition-all duration-300 ${
                     scrolled
-                        ? "border-[#DDE3DE] bg-[#FBFAF7]/90 shadow-sm backdrop-blur-md"
-                        : "border-transparent bg-[#FBFAF7]/80 backdrop-blur"
+                        ? "border-slate-800/50 bg-slate-900/60 shadow-lg shadow-black/20 backdrop-blur-xl py-3"
+                        : "border-transparent bg-transparent py-5"
                 }`}
             >
-                <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-                    <Link to="/customer" className="group flex items-center">
-                        <div className="relative flex h-11 w-11 items-center justify-center">
-                            <span className="absolute inset-0 rounded-md bg-[#1F6F54]/30 anim-spin-slow" />
-                            <span className="relative flex h-11 w-11 items-center justify-center rounded-md bg-[#1F6F54] font-display text-xl text-white transition-transform duration-300 group-hover:rotate-6">
+                <div className="mx-auto flex items-center justify-between px-6 lg:px-10 max-w-7xl">
+                    <Link to="/customer" className="group flex items-center anim-up">
+                        <div className="relative flex h-12 w-12 items-center justify-center">
+                            <span className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/20 opacity-80 group-hover:opacity-100 transition-opacity" />
+                            <span className="relative flex h-12 w-12 items-center justify-center font-display text-2xl text-white transition-transform duration-300 group-hover:scale-110">
                                 ℞
                             </span>
                         </div>
-                        <div className="ml-3">
-                            <h1 className="font-display font-semibold text-[#1C2521]">
+                        <div className="ml-4">
+                            <h1 className="font-bold text-lg text-white tracking-tight group-hover:text-emerald-300 transition-colors">
                                 Smart Pharmacy
                             </h1>
-                            <p className="text-xs text-[#6B7570]">Online Pharmacy</p>
+                            <p className="text-xs font-medium text-emerald-400/80 uppercase tracking-widest mt-0.5">Online Store</p>
                         </div>
                     </Link>
 
-                    <nav className="hidden items-center gap-8 md:flex">
+                    <nav className="hidden items-center gap-8 md:flex anim-up" style={{ animationDelay: '0.1s' }}>
                         <NavLink to="/customer" end className={linkClass}>
                             Home
                         </NavLink>
@@ -84,46 +95,57 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
                         </NavLink>
                     </nav>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4 anim-up" style={{ animationDelay: '0.2s' }}>
                         <Link
                             to="/customer/cart"
-                            className="relative rounded-md border border-[#DDE3DE] px-3 py-2 text-sm font-medium text-[#1C2521] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#1F6F54]/50"
+                            className="relative flex items-center justify-center rounded-xl border border-slate-700/50 bg-slate-800/50 p-2.5 text-emerald-400 transition-all duration-300 hover:border-emerald-500/30 hover:bg-slate-700/50 hover:text-emerald-300"
                         >
-                            Cart
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
                             {cartCount > 0 && (
                                 <span
                                     key={cartCount}
-                                    className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#C08A2E] px-1 text-xs font-semibold text-white"
+                                    className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1 text-xs font-bold text-slate-900 shadow-[0_0_10px_rgba(16,185,129,0.5)]"
                                     style={{ animation: "cart-bounce 0.45s ease" }}
                                 >
                                     {cartCount}
                                 </span>
                             )}
                         </Link>
+                        
+                        <div className="h-8 w-px bg-slate-700/50 hidden sm:block"></div>
+
                         <Link
                             to="/customer/profile"
-                            className="hidden max-w-36 truncate text-sm text-[#6B7570] transition-colors hover:text-[#1C2521] sm:block"
+                            className="hidden max-w-[150px] truncate text-sm font-medium text-slate-300 transition-colors hover:text-emerald-400 sm:block"
                         >
                             {user?.fullName}
                         </Link>
+                        
                         <button
                             onClick={handleLogout}
-                            className="rounded-md px-3 py-2 text-sm font-medium text-[#6B7570] transition-colors hover:bg-[#1C2521]/5 hover:text-[#1C2521]"
+                            className="flex items-center gap-2 rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-2.5 text-sm font-medium text-slate-300 transition-all duration-300 hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400 group"
                         >
-                            Logout
+                            <svg className="w-4 h-4 text-slate-400 group-hover:text-red-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            <span className="hidden sm:inline">Sign Out</span>
                         </button>
                     </div>
                 </div>
             </header>
 
-            <div key={location.pathname} className="anim-page">
-                {children}
-            </div>
+            <main className="flex-1 relative z-10 w-full">
+                <div key={location.pathname} className="anim-page h-full">
+                    {children}
+                </div>
+            </main>
 
-            <footer className="mt-10 border-t border-[#DDE3DE] bg-[#FBFAF7]">
+            <footer className="mt-16 border-t border-slate-800/50 bg-slate-900/50 relative z-10">
                 <div className="mx-auto max-w-7xl px-6 py-8">
-                    <p className="text-center text-sm text-[#6B7570]">
-                        © 2026 Smart Pharmacy. Care that arrives on time.
+                    <p className="text-center text-sm font-medium text-slate-500">
+                        © 2026 Smart Pharmacy. Premium care that arrives on time.
                     </p>
                 </div>
             </footer>
