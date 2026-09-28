@@ -118,7 +118,7 @@ public class UserManagementService {
     User loggedInUser =
             (User) authentication.getPrincipal();
 
-    // Adminට තමන්ගේ role එක change කරන්න බැහැ
+    // Admin cannot change their own role
     if (loggedInUser.getId().equals(id)) {
 
         throw new RuntimeException(
@@ -171,7 +171,7 @@ public class UserManagementService {
     User loggedInUser =
             (User) authentication.getPrincipal();
 
-    // Adminට තමන්ව delete කරන්න බැහැ
+    // Admin cannot delete themselves
     if (loggedInUser.getId().equals(id)) {
 
         throw new RuntimeException(

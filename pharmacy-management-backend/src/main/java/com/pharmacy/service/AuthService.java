@@ -14,20 +14,20 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     /*
-     * Database එකෙන් User හොයන්න Repository එක use කරනවා.
+     * Using Repository to find User from Database.
      */
     private final UserRepository userRepository;
 
 
     /*
-     * User password එක database password එකත් එක්ක
-     * compare කරන්න PasswordEncoder use කරනවා.
+     * Used to compare user password with database password
+     * using PasswordEncoder.
      */
     private final PasswordEncoder passwordEncoder;
 
 
     /*
-     * JWT token generate කරන්න JwtService use කරනවා.
+     * Using JwtService to generate JWT token.
      */
     private final JwtService jwtService;
 
@@ -35,7 +35,7 @@ public class AuthService {
     /*
      * Constructor injection.
      *
-     * Spring automatically මේ dependencies 3 inject කරනවා.
+     * Spring automatically injects these 3 dependencies.
      */
     public AuthService(
             UserRepository userRepository,
@@ -60,8 +60,8 @@ public class AuthService {
         /*
          * Step 1:
          *
-         * User enter කරපු email එකෙන්
-         * database එකේ user හොයනවා.
+         * Finding user in database
+         * using the entered email.
          */
         User user = userRepository
                 .findByEmail(request.getEmail())
@@ -75,11 +75,11 @@ public class AuthService {
         /*
          * Step 2:
          *
-         * User enter කරපු plain password එක
+         * Comparing user entered plain password
          *
-         * Database එකේ තියෙන BCrypt hashed password
+         * with the BCrypt hashed password
          *
-         * එක්ක compare කරනවා.
+         * in the Database.
          */
         boolean passwordMatches =
                 passwordEncoder.matches(
@@ -89,8 +89,8 @@ public class AuthService {
 
 
         /*
-         * Password එක incorrect නම්
-         * login reject කරනවා.
+         * If password is incorrect,
+         * reject login.
          */
         if (!passwordMatches) {
 
@@ -103,7 +103,7 @@ public class AuthService {
         /*
          * Step 3:
          *
-         * Email + Role ඇතුළත් JWT token එක generate කරනවා.
+         * Generating JWT token containing Email + Role.
          */
         String token =
                 jwtService.generateToken(user);
@@ -112,7 +112,7 @@ public class AuthService {
         /*
          * Step 4:
          *
-         * Frontend එකට login response එක return කරනවා.
+         * Returning login response to frontend.
          */
         return new LoginResponse(
                 token,
@@ -136,13 +136,13 @@ public class AuthService {
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
 
-        // Password hash කරන්න
+        // Hashing password
         user.setPassword(
                 passwordEncoder.encode(request.getPassword())
         );
 
         // IMPORTANT:
-        // Public registration එකෙන් role එක user ට control කරන්න දෙන්නේ නැහැ.
+        // Not allowing user to control role from public registration.
         user.setRole("CUSTOMER");
 
         User savedUser = userRepository.save(user);

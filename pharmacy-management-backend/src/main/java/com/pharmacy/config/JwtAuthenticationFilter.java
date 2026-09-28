@@ -22,13 +22,13 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     /*
-     * JWT token එක decode / validate කරන්න.
+     * Decode / validate JWT token.
      */
     private final JwtService jwtService;
 
     /*
-     * JWT එකෙන් ගත්ත email එකෙන්
-     * database එකේ User හොයන්න.
+     * Find user in database
+     * using email from JWT.
      */
     private final UserRepository userRepository;
 
@@ -46,8 +46,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
     /*
-     * මේ method එක request එකක් backend එකට එන
-     * හැම වෙලාවකම execute වෙනවා.
+     * This method executes every time
+     * a request comes to the backend.
      */
     @Override
     protected void doFilterInternal(
@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
         /*
-         * Request එකේ Authorization header එක ගන්නවා.
+         * Getting Authorization header from Request.
          *
          * Expected:
          *
@@ -69,11 +69,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
         /*
-         * Authorization header එක නැත්නම්
-         * මේ request එකේ JWT නැහැ.
+         * If Authorization header is missing
+         * there is no JWT in this request.
          *
-         * එතකොට request එක stop නොකර
-         * ඊළඟ filter එකට යවනවා.
+         * Then without stopping the request
+         * forwarding to the next filter.
          */
         if (authHeader == null ||
                 !authHeader.startsWith("Bearer ")) {
@@ -84,8 +84,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
         /*
-         * "Bearer " කොටස remove කරලා
-         * actual JWT token එක ගන්නවා.
+         * Removing "Bearer " part
+         * and getting the actual JWT token.
          */
         String token =
                 authHeader.substring(7);
@@ -94,15 +94,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
 
             /*
-             * JWT එකෙන් email එක extract කරනවා.
+             * Extracting email from JWT.
              */
             String email =
                     jwtService.extractEmail(token);
 
 
             /*
-             * Email එක ලැබුණා නම්
-             * database එකෙන් User හොයනවා.
+             * If email is found
+             * searching User in database.
              */
             if (email != null &&
                     SecurityContextHolder
@@ -121,15 +121,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
                     /*
-                     * Userගේ role එක Spring Security
-                     * authority එකක් බවට convert කරනවා.
+                     * Converting User's role to a
+                     * Spring Security authority.
                      *
                      * ADMIN
                      * PHARMACIST
                      * CUSTOMER
                      *
-                     * Spring Security convention එක අනුව
-                     * ROLE_ prefix එක use කරනවා.
+                     * According to Spring Security convention
+                     * using ROLE_ prefix.
                      */
                     String role = user.getRole() == null
                             ? ""
@@ -144,7 +144,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
                     /*
-                     * Authenticated user object එක create කරනවා.
+                     * Creating authenticated user object.
                      */
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(
@@ -155,8 +155,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
                     /*
-                     * Spring Security Context එකට
-                     * authenticated user set කරනවා.
+                     * Setting authenticated user
+                     * in Spring Security Context.
                      */
                     SecurityContextHolder
                             .getContext()
@@ -167,19 +167,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception e) {
 
             /*
-             * JWT invalid / expired / malformed නම්
-             * authentication set කරන්නේ නැහැ.
+             * If JWT is invalid / expired / malformed
+             * authentication is not set.
              *
-             * Request එක continue වෙනවා.
+             * Request continues.
              *
-             * Protected endpoint එකක් නම්
-             * SecurityConfig එකෙන් 401 return කරයි.
+             * If it is a protected endpoint
+             * SecurityConfig returns 401.
              */
         }
 
 
         /*
-         * ඊළඟ security filter එකට request එක යවනවා.
+         * Forwarding request to next security filter.
          */
         filterChain.doFilter(request, response);
     }

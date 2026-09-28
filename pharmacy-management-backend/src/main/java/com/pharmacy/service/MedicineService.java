@@ -21,7 +21,7 @@ public class MedicineService {
     private final MedicineRepository medicineRepository;
 
     private final SupplierRepository supplierRepository;
-    // Repository එක Service එකට inject කරනවා
+    // Injecting Repository into Service
     public MedicineService(
             MedicineRepository medicineRepository,
             SupplierRepository supplierRepository
@@ -37,7 +37,7 @@ public class MedicineService {
 
     public MedicineResponse createMedicine(MedicineRequest request) {
 
-        // Request DTO එකෙන් data අරගෙන Entity එකක් හදනවා
+        // Creating Entity from Request DTO
         Medicine medicine = new Medicine();
 
 
@@ -65,10 +65,10 @@ public class MedicineService {
         }
 
 
-        // Entity එක database එකට save කරනවා
+        // Saving Entity to database
         Medicine savedMedicine = medicineRepository.save(medicine);
 
-        // Saved Entity එක Response DTO එකකට convert කරනවා
+        // Converting Saved Entity to Response DTO
         return convertToResponse(savedMedicine);
     }
 
@@ -79,10 +79,10 @@ public class MedicineService {
 
     public List<MedicineResponse> getAllMedicines() {
 
-        // Database එකෙන් සියලු medicines ලබාගන්නවා
+        // Retrieving all medicines from Database
         List<Medicine> medicines = medicineRepository.findAll();
 
-        // Entity list එක Response DTO list එකකට convert කරනවා
+        // Converting Entity list to Response DTO list
         return medicines.stream()
                 .map(this::convertToResponse)
                 .toList();
@@ -144,7 +144,7 @@ public class MedicineService {
     }
     public MedicineResponse getMedicineById(Long id) {
 
-        // ID එකෙන් medicine එක search කරනවා
+        // Searching medicine by ID
         Medicine medicine = medicineRepository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException("Medicine not found with id: " + id)
@@ -160,7 +160,7 @@ public class MedicineService {
 
     public MedicineResponse updateMedicine(Long id, MedicineRequest request) {
 
-        // මුලින් existing medicine එක හොයනවා
+        // Finding existing medicine first
         Medicine medicine = medicineRepository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException("Medicine not found with id: " + id)
@@ -177,7 +177,7 @@ public class MedicineService {
                             )
                     );
         }
-        // Existing data update කරනවා
+        // Updating existing data
         medicine.setMedicineName(request.getMedicineName());
         medicine.setGenericName(request.getGenericName());
         medicine.setCategory(request.getCategory());
@@ -188,7 +188,7 @@ public class MedicineService {
         medicine.setExpiryDate(request.getExpiryDate());
         medicine.setReorderLevel(request.getReorderLevel());
 
-        // Updated medicine එක database එකට save කරනවා
+        // Saving updated medicine to database
         Medicine updatedMedicine = medicineRepository.save(medicine);
 
         return convertToResponse(updatedMedicine);
@@ -201,14 +201,14 @@ public class MedicineService {
 
     public void deleteMedicine(Long id) {
 
-        // Medicine එක තිබෙනවාද බලනවා
+        // Checking if medicine exists
         if (!medicineRepository.existsById(id)) {
             throw new RuntimeException(
                     "Medicine not found with id: " + id
             );
         }
 
-        // Database එකෙන් delete කරනවා
+        // Deleting from database
         medicineRepository.deleteById(id);
     }
 

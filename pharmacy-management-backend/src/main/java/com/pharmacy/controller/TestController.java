@@ -5,21 +5,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /*
- * මේ Controller එක authorization test කරන්න විතරයි.
+ * This Controller is only for authorization testing.
  *
- * පස්සේ actual:
+ * Later actual:
  *
  * - AdminController
  * - PharmacistController
  * - CustomerController
  *
- * හදනකොට මේ logic එක use කරමු.
+ * let's use this logic when building.
  */
 @RestController
 
 /*
- * මේ Controller එකේ සියලු endpoints
- * /api යටතේ තියෙනවා.
+ * All endpoints in this Controller
+ * are under /api.
  */
 @RequestMapping("/api")
 public class TestController {
@@ -30,11 +30,11 @@ public class TestController {
      * ADMIN TEST ENDPOINT
      * ==========================================
      *
-     * SecurityConfig එකේ:
+     * In SecurityConfig:
      *
      * /api/admin/**
      *
-     * ADMIN role එකට විතරක් allow කරලා තියෙනවා.
+     * Allowed only for ADMIN role.
      */
     @GetMapping("/admin/test")
     public String adminTest() {
@@ -50,7 +50,7 @@ public class TestController {
      *
      * /api/pharmacist/**
      *
-     * PHARMACIST role එකට විතරක් access.
+     * Access only for PHARMACIST role.
      */
     @GetMapping("/pharmacist/test")
     public String pharmacistTest() {
@@ -66,7 +66,7 @@ public class TestController {
      *
      * /api/customer/**
      *
-     * CUSTOMER role එකට විතරක් access.
+     * Access only for CUSTOMER role.
      */
     @GetMapping("/customer/test")
     public String customerTest() {

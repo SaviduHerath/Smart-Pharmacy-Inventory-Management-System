@@ -12,18 +12,18 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    // JWT sign කරන්න use කරන secret key එක.
-    // Production application එකක මේක application.properties
-    // / environment variable එකක තියාගන්න.
+    // Secret key used to sign JWT.
+    // In production, keep this in application.properties
+    // or in an environment variable.
     private static final String SECRET_KEY =
             "my-super-secret-key-for-pharmacy-management-system-2026";
 
-    // Token එක valid වෙන කාලය.
-    // මෙතන පැය 24ක් set කරලා තියෙනවා.
+    // Token validity duration.
+    // Set to 24 hours here.
     private static final long EXPIRATION_TIME =
             1000 * 60 * 60 * 24;
 
-    // Secret key එකෙන් cryptographic key එක create කරන method එක.
+    // Method to create cryptographic key from secret key.
     private SecretKey getSigningKey() {
 
         return Keys.hmacShaKeyFor(
@@ -31,21 +31,21 @@ public class JwtService {
         );
     }
 
-    // User login successful උනාට පස්සේ JWT token එක generate කරන method එක.
+    // Method to generate JWT token after successful login.
     public String generateToken(User user) {
 
         return Jwts.builder()
 
-                // Token එකේ subject විදිහට email එක save කරනවා.
+                // Saving email as token subject.
                 .subject(user.getEmail())
 
-                // Userගේ role එක token එකේ claim එකක් විදිහට save කරනවා.
+                // Saving user role as a token claim.
                 .claim("role", user.getRole())
 
-                // Token එක create කරපු වෙලාව.
+                // Token creation time.
                 .issuedAt(new Date())
 
-                // Token එක expire වෙන වෙලාව.
+                // Token expiration time.
                 .expiration(
                         new Date(
                                 System.currentTimeMillis()
@@ -53,13 +53,13 @@ public class JwtService {
                         )
                 )
 
-                // Secret key එකෙන් token එක digitally sign කරනවා.
+                // Digitally signing the token with secret key.
                 .signWith(getSigningKey())
 
-                // JWT string එක return කරනවා.
+                // Returning JWT string.
                 .compact();
     }
-    // JWT token එකෙන් email extract කරනවා.
+    // Extracting email from JWT token.
     public String extractEmail(String token) {
 
         return Jwts.parser()
@@ -71,16 +71,16 @@ public class JwtService {
     }
 
 
-    // Token එක මේ userට අදාළ valid token එකක්ද check කරනවා.
+    // Checking if token is valid for this user.
     public boolean isTokenValid(
             String token,
             User user
     ) {
 
-        // Token එකේ email එක extract කරනවා.
+        // Extracting email from token.
         String email = extractEmail(token);
 
-        // Token expiry date එක ගන්නවා.
+        // Getting token expiry date.
         Date expiration =
                 Jwts.parser()
                         .verifyWith(getSigningKey())
@@ -89,8 +89,8 @@ public class JwtService {
                         .getPayload()
                         .getExpiration();
 
-        // Email match වෙන්න ඕන
-        // සහ token expire වෙලා තියෙන්න බැහැ.
+        // Email must match
+        // and token cannot be expired.
         return email.equals(user.getEmail())
                 && expiration.after(new Date());
     }

@@ -2,7 +2,7 @@ package com.pharmacy.dto;
 
 public class LoginResponse {
 
-    // Frontend එකට යවන JWT token එක.
+    // JWT token sent to frontend.
     private String token;
 
     // Logged-in user's ID.

@@ -20,10 +20,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 public class SecurityConfig {
 
     /*
-     * අපි කලින් හදපු JWT Authentication Filter එක.
+     * The JWT Authentication Filter we created earlier.
      *
-     * මේ filter එක request එකේ JWT token එක
-     * check කරනවා.
+     * This filter checks the JWT token
+     * in the request.
      */
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -32,7 +32,7 @@ public class SecurityConfig {
      * Constructor Injection.
      *
      * Spring automatically JwtAuthenticationFilter
-     * object එක මෙතනට inject කරනවා.
+     * object is injected here.
      */
     public SecurityConfig(
             JwtAuthenticationFilter jwtAuthenticationFilter
@@ -48,8 +48,8 @@ public class SecurityConfig {
      * PASSWORD ENCODER
      * ============================================
      *
-     * User register වෙනකොට password එක
-     * BCrypt hash එකක් බවට convert කරන්න මේක use කරනවා.
+     * Used to convert password to BCrypt hash
+     * when user registers.
      *
      * Example:
      *
@@ -69,7 +69,7 @@ public class SecurityConfig {
      * SECURITY FILTER CHAIN
      * ============================================
      *
-     * Application එකේ security rules මෙතන define කරනවා.
+     * Defining security rules of the application here.
      */
     @Bean
     public SecurityFilterChain securityFilterChain(
@@ -84,8 +84,8 @@ public class SecurityConfig {
                  * CSRF
                  * =====================================
                  *
-                 * REST API + JWT authentication use කරන නිසා
-                 * CSRF disable කරනවා.
+                 * Since we use REST API + JWT authentication,
+                 * CSRF is disabled.
                  */
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
@@ -95,11 +95,11 @@ public class SecurityConfig {
                  * SESSION MANAGEMENT
                  * =====================================
                  *
-                 * අපි session-based login use කරන්නේ නැහැ.
+                 * We are not using session-based login.
                  *
-                 * JWT එක තමයි authentication එක.
+                 * JWT is used for authentication.
                  *
-                 * ඒ නිසා STATELESS.
+                 * Therefore, it is STATELESS.
                  */
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
@@ -121,10 +121,10 @@ public class SecurityConfig {
                          * PUBLIC ENDPOINTS
                          * ---------------------------------
                          *
-                         * Login කරන්න JWT token එකක්
-                         * තිබිය නොහැක.
+                         * A JWT token is not required
+                         * to login.
                          *
-                         * ඒ නිසා login සහ register
+                         * So login and register
                          * public.
                          */
                         .requestMatchers(HttpMethod.OPTIONS, "/**")
@@ -141,8 +141,8 @@ public class SecurityConfig {
                          * ---------------------------------
                          *
                          * /api/admin/**
-                         * endpoints access කරන්න පුළුවන්
-                         * ADMIN role එකට විතරයි.
+                         * endpoints can be accessed.
+                         * Only for ADMIN role.
                          */
                         .requestMatchers(
                                 "/api/admin/**"
@@ -209,11 +209,11 @@ public class SecurityConfig {
          * JWT FILTER
          * ============================================
          *
-         * UsernamePasswordAuthenticationFilter එකට
-         * කලින් අපේ JWT filter එක run කරනවා.
+         * Running our JWT filter before
+         * UsernamePasswordAuthenticationFilter.
          *
-         * ඒ නිසා request එක Controller එකට යන්න කලින්
-         * JWT token එක verify වෙනවා.
+         * So JWT token is verified before
+         * request goes to Controller.
          */
         http.addFilterBefore(
                 jwtAuthenticationFilter,
@@ -222,7 +222,7 @@ public class SecurityConfig {
 
 
         /*
-         * Final SecurityFilterChain එක return කරනවා.
+         * Returning final SecurityFilterChain.
          */
         return http.build();
     }

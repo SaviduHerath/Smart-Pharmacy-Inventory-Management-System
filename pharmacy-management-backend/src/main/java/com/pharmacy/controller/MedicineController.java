@@ -22,7 +22,7 @@ public class MedicineController {
     private final MedicineService medicineService;
 
 
-    // MedicineService එක Controller එකට inject කරනවා
+    // Injecting MedicineService to Controller
     public MedicineController(MedicineService medicineService) {
         this.medicineService = medicineService;
     }
@@ -37,13 +37,13 @@ public class MedicineController {
     public ResponseEntity<MedicineResponse> createMedicine(
             @RequestBody MedicineRequest request) {
 
-        // Frontend එකෙන් ලැබෙන JSON data
-        // MedicineRequest DTO එකට convert වෙනවා
+        // JSON data received from frontend
+        // converts to MedicineRequest DTO
 
         MedicineResponse response =
                 medicineService.createMedicine(request);
 
-        // 201 CREATED response එකක් return කරනවා
+        // Returning a 201 CREATED response
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
@@ -58,7 +58,7 @@ public class MedicineController {
     @GetMapping
     public ResponseEntity<List<MedicineResponse>> getAllMedicines() {
 
-        // Database එකේ තියෙන සියලු medicines ලබාගන්නවා
+        // Retrieving all medicines from database
         List<MedicineResponse> medicines =
                 medicineService.getAllMedicines();
 
@@ -107,8 +107,8 @@ public class MedicineController {
     public ResponseEntity<MedicineResponse> getMedicineById(
             @PathVariable Long id) {
 
-        // URL එකෙන් ID එක ලබාගන්නවා
-        // උදා: /api/medicines/5
+        // Retrieving ID from URL
+        // Ex: /api/medicines/5
 
         MedicineResponse medicine =
                 medicineService.getMedicineById(id);
@@ -127,7 +127,7 @@ public class MedicineController {
             @PathVariable Long id,
             @RequestBody MedicineRequest request) {
 
-        // Existing medicine එක update කරනවා
+        // Updating existing medicine
 
         MedicineResponse updatedMedicine =
                 medicineService.updateMedicine(id, request);
@@ -145,7 +145,7 @@ public class MedicineController {
     public ResponseEntity<String> deleteMedicine(
             @PathVariable Long id) {
 
-        // Medicine එක delete කරනවා
+        // Deleting medicine
         medicineService.deleteMedicine(id);
 
         return ResponseEntity.ok(

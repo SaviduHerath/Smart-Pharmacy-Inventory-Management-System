@@ -63,7 +63,7 @@ public class CartController {
     /*
      * GET /api/cart
      *
-     * Logged-in customer's cart එක ලබාගන්නවා.
+     * Retrieving logged-in customer's cart.
      */
     @GetMapping
     public ResponseEntity<CartResponse> getCart() {

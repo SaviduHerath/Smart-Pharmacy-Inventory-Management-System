@@ -37,11 +37,11 @@ public class AuthController {
 
         try {
 
-            // Registration business logic එක UserService එකට යවනවා.
+            // Sending registration business logic to UserService.
             User savedUser =
                     userService.registerUser(user);
 
-            // Password එක response එකට යවන්නේ නැහැ.
+            // Not sending password in response.
             savedUser.setPassword(null);
 
             return ResponseEntity
@@ -67,7 +67,7 @@ public class AuthController {
 
         try {
 
-            // Login logic එක AuthService එකට යවනවා.
+            // Sending login logic to AuthService.
             LoginResponse response =
                     authService.login(request);
 

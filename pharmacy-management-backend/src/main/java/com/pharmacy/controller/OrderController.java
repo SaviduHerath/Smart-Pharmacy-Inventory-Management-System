@@ -72,7 +72,7 @@ public class OrderController {
     /*
      * POST /api/orders
      *
-     * Current user's cart එක order එකකට convert කරනවා.
+     * Converting current user's cart to an order.
      *
      * Flow:
      *
@@ -112,7 +112,7 @@ public class OrderController {
     /*
      * GET /api/orders/my
      *
-     * Logged-in customerගේ orders විතරක් ලබාගන්නවා.
+     * Retrieving orders only for logged-in customer.
      */
     @GetMapping
     public ResponseEntity<List<OrderResponse>> getAllOrders() {
@@ -162,7 +162,7 @@ public class OrderController {
     /*
      * GET /api/orders/{id}
      *
-     * Order ID එකෙන් order එක ලබාගන්නවා.
+     * Retrieving order by Order ID.
      */
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getOrderById(
@@ -220,9 +220,9 @@ public class OrderController {
     /*
      * PUT /api/orders/{id}/cancel
      *
-     * Customer තමන්ගේ order එක cancel කරනවා.
+     * Customer cancelling their order.
      *
-     * Cancel වුණාම:
+     * Upon cancellation:
      *
      * Order status → CANCELLED
      *

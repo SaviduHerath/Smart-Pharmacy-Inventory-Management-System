@@ -2,10 +2,10 @@ package com.pharmacy.dto;
 
 public class LoginRequest {
 
-    // User login කරන email එක.
+    // Email used for login.
     private String email;
 
-    // User enter කරන password එක.
+    // Password entered by user.
     private String password;
 
     public LoginRequest() {
